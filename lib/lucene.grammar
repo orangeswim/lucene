@@ -332,6 +332,8 @@ EscapeSequence
   / "~"
   / "*"
   / " "
+  / ">"
+  / "<"  
 
 proximity_modifier
   = '~' proximity:int_exp
