@@ -1,7 +1,7 @@
 {
   "name": "lucene",
-  "version": "2.1.1",
-  "description": "Lucene query parser and formatter for JavaScript created using PEG.js",
+  "version": "2.1.2",
+  "description": "Lucene query parser and formatter for JavaScript created using PEG.js FORK",
   "main": "lib/lucene.js",
   "files": [
     "lib"
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/bripkens/lucene.git"
+    "url": "git://github.com/orangeswim/lucene.git"
   },
   "keywords": [
     "lucene",
@@ -24,9 +24,8 @@
     "formatter"
   ],
   "author": {
-    "name": "Ben Ripkens",
-    "email": "bripkens@gmail.com",
-    "url": "http://github.com/bripkens"
+    "name": "Cyprian Bergonia",
+    "url": "http://github.com/orangeswim"
   },
   "license": "MIT",
   "bugs": {
@@ -41,5 +40,8 @@
     "istanbul": "^0.4.5",
     "mocha": "^6.2.0",
     "pegjs": "^0.10.0"
+  },
+  "dependencies": {
+    "lucene": "github:orangeswim/lucene"
   }
 }

@@ -6,13 +6,13 @@
  *
  * Supported features:
  * - conjunction operators (AND, OR, ||, &&, NOT, AND NOT, OR NOT)
- * - prefix operators (+, -)
+ * X prefix operators (+, -)
  * - quoted values ("foo bar")
  * - named fields (foo:bar)
  * - range expressions (foo:[bar TO baz], foo:{bar TO baz})
  * - regex expressions (/^f?o[1-5]o/)
  * - proximity search expressions ("foo bar"~5)
- * - boost expressions (foo^5, "foo bar"^5)
+ * X boost expressions (foo^5, "foo bar"^5)
  * - fuzzy search expressions (foo~, foo~0.5)
  * - parentheses grouping ( (foo OR bar) AND baz )
  * - field groups ( foo:(bar OR baz) )
@@ -213,7 +213,7 @@ fieldname
     }
 
 term
-  = op:prefix_operator_exp? term:quoted_term proximity:proximity_modifier? boost:boost_modifier? _*
+  = term:quoted_term _*
       {
         var result = {
           'term': term,
@@ -222,22 +222,10 @@ term
           'termLocation': location()
         };
 
-        if('' != proximity)
-        {
-            result['proximity'] = proximity;
-        }
-        if('' != boost)
-        {
-            result['boost'] = boost;
-        }
-        if('' != op)
-        {
-            result['prefix'] = op;
-        }
 
         return result;
     }
-  / op:prefix_operator_exp? term:regex_term _*
+  / term:regex_term _*
       {
         var result = {
           'term': term,
@@ -248,7 +236,7 @@ term
 
         return result;
     }
-  / op:prefix_operator_exp? term:unquoted_term similarity:fuzzy_modifier? boost:boost_modifier? _*
+  / term:unquoted_term _*
     {
         var result = {
           'term': term.label,
@@ -256,24 +244,13 @@ term
           'regex': false,
           'termLocation': location()
         };
-        if('' != similarity)
-        {
-            result['similarity'] = similarity;
-        }
-        if('' != boost)
-        {
-            result['boost'] = boost;
-        }
-        if('' != op)
-        {
-            result['prefix'] = op;
-        }
+        
         return result;
     }
 
 rterm_char
   = "\\" sequence:EscapeSequence { return '\\' + sequence; }
-  / '.' / [^ \t\r\n\f\{\}()"/^~\[\]]
+  / '.' / [^ \t\r\n\f\{\}()"\[\]]
 
 
 ranged_term
@@ -293,7 +270,7 @@ unquoted_term
 
 term_char
   = "\\" sequence:EscapeSequence { return '\\' + sequence; }
-  / '.' / [^: \t\r\n\f\{\}()"/^~\[\]]
+  / '.' / [^: \t\r\n\f\{\}()" \[\]]
 
 
 quoted_term
@@ -334,24 +311,6 @@ EscapeSequence
   / " "
   / ">"
   / "<"  
-
-proximity_modifier
-  = '~' proximity:int_exp
-    {
-        return proximity;
-    }
-
-boost_modifier
-  = '^' boost:decimal_or_int_exp
-    {
-        return boost;
-    }
-
-fuzzy_modifier
-  = '~' fuzziness:decimal_exp?
-    {
-        return fuzziness == '' || fuzziness == null ? 0.5 : fuzziness;
-    }
 
 decimal_or_int_exp
  = decimal_exp
@@ -419,19 +378,14 @@ operator
   / 'OR'
   / 'AND'
   / 'NOT'
-  / '||'
-  / '&&'
-
-prefix_operator_exp
-  = _* operator:prefix_operator
-    {
-        return operator;
-    }
-
-prefix_operator
-  = '+'
-  / '-'
-  / '!'
+  / 'GT'
+  / 'LT'
+  / 'GTE'
+  / 'LTE'
+  / 'AND GT'
+  / 'AND GTE'
+  / 'AND LT'
+  / 'AND LTE' 
 
 _ "whitespace"
   = [ \t\r\n\f]+
